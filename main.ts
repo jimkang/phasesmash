@@ -3,19 +3,21 @@ import RouteState from 'route-state';
 import handleError from 'handle-error-web';
 import { version } from './package.json';
 import ContextKeeper from 'audio-context-singleton';
-import wireControls from './renderers/wire-controls';
+import { wireMainControls } from './renderers/wire-controls';
 import seedrandom from 'seedrandom';
 import RandomId from '@jimkang/randomid';
 import { createProbable as Probable } from 'probable';
 import { tonalityDiamondPitches } from './tonality-diamond';
-import { select } from 'd3-selection';
 import { interpolateValueWithTick } from './tasks/interpolate-with-tick';
 import ep from 'errorback-promise';
+import { LoopDeck } from './types';
+import { renderDecks } from './renderers/render-deck';
 
 var randomId = RandomId();
 var routeState: { routeFromHash: () => void; addToRoute: (arg0: { seed: any; }) => void; };
 var { getCurrentContext } = ContextKeeper();
 var prob;
+var decks: LoopDeck[] = [];
 
 (async function go() {
   window.onerror = reportTopLevelError;
@@ -37,17 +39,31 @@ async function followRoute({
     return;
   }
 
-  var { error, values } = await ep(getCurrentContext);
-  if (error) {
-    handleError(error);
-    return;
-  }
+  // var { error, values } = await ep(getCurrentContext);
+  // if (error) {
+  //   handleError(error);
+  //   return;
+  // }
 
-  var ctx = values[0];
+  // var ctx = values[0];
 
   var random = seedrandom(seed);
   prob = Probable({ random });
   prob.roll(2);
+
+  wireMainControls({ onAddLoop });
+
+  function onAddLoop() {
+    console.log('hey');
+    decks.push({
+      id: 'deck-' + randomId(4),
+      pan: 0,
+      loopStartSecs: 0,
+      loopEndSecs: Infinity,
+      amp: 1.0
+    });
+    renderDecks({ decks });
+  }
 }
 
 function reportTopLevelError(_msg: any, _url: any, _lineNo: any, _columnNo: any, error: any) {
