@@ -1,6 +1,6 @@
 # phasesmash
 
-Crude feedback and granular synthesis tool.
+A tool for looping samples at (if you want) differing phases.
 
 ## Getting it running
 
@@ -12,9 +12,3 @@ Once you have this source code on your computer, you can get it running by doing
 
   - On Windows, you may not have `make`. In that case, you can run `npm run dev`.
   - Go to `http://0.0.0.0:7000` (or `http://localhost:7000`) in your browser. The web app will be running there.
-
-    - It looks roughly like this when it's working:
-
-    ![Screenshot of the web app](meta/Screenshot 2023-04-09 at 20-10-55 Graphback.png)
-
-It is also [on the web](https://jimkang.com/phasesmash/), though the UI is really rough; that's all I have time for right now. If you draw curves on all of the graphs and hit Start, it may make sound.
