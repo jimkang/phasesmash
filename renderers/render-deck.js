@@ -1,6 +1,7 @@
 import { select } from 'd3-selection';
 
 var numberProps = ['pan', 'loopStartSecs', 'loopEndSecs', 'amp'];
+
 export function renderDecks({ decks }) {
   var deckSel = select('.decks-root')
     .selectAll('.deck')
@@ -11,6 +12,20 @@ export function renderDecks({ decks }) {
   var newDeckSel = deckSel.enter().append('li').classed('deck', true);
   var newDeckControlsSel = newDeckSel.append('ul').classed('controls', true);
   numberProps.forEach(appendControl);
+
+  var newFileControlSel = newDeckControlsSel
+    .append('li')
+    .classed('control', true)
+    .classed('sampleFile', true);
+  newFileControlSel
+    .append('label')
+    .attr('for', 'sampleFile')
+    .text('Sample file');
+  newFileControlSel
+    .append('input')
+    .attr('type', 'file')
+    .attr('name', 'sampleFile');
+  // .on('change', ) // TODO
 
   var shouldExistDeckControlsSel = newDeckSel
     .merge(deckSel)

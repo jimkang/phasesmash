@@ -1,4 +1,4 @@
-import './app.css'
+import './app.css';
 import RouteState from 'route-state';
 import handleError from 'handle-error-web';
 import { version } from './package.json';
@@ -14,7 +14,10 @@ import { LoopDeck } from './types';
 import { renderDecks } from './renderers/render-deck';
 
 var randomId = RandomId();
-var routeState: { routeFromHash: () => void; addToRoute: (arg0: { seed: any; }) => void; };
+var routeState: {
+  routeFromHash: () => void;
+  addToRoute: (arg0: { seed: any }) => void;
+};
 var { getCurrentContext } = ContextKeeper();
 var prob;
 var decks: LoopDeck[] = [];
@@ -31,9 +34,7 @@ var decks: LoopDeck[] = [];
   routeState.routeFromHash();
 })();
 
-async function followRoute({
-  seed
-}: { seed: string }) {
+async function followRoute({ seed }: { seed: string }) {
   if (!seed) {
     routeState.addToRoute({ seed: randomId(8) });
     return;
@@ -59,14 +60,20 @@ async function followRoute({
       id: 'deck-' + randomId(4),
       pan: 0,
       loopStartSecs: 0,
-      loopEndSecs: Infinity,
-      amp: 1.0
+      loopEndSecs: 10,
+      amp: 1.0,
     });
     renderDecks({ decks });
   }
 }
 
-function reportTopLevelError(_msg: any, _url: any, _lineNo: any, _columnNo: any, error: any) {
+function reportTopLevelError(
+  _msg: any,
+  _url: any,
+  _lineNo: any,
+  _columnNo: any,
+  error: any
+) {
   handleError(error);
 }
 
