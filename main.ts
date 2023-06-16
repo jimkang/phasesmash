@@ -11,7 +11,8 @@ import { tonalityDiamondPitches } from './tonality-diamond';
 import { interpolateValueWithTick } from './tasks/interpolate-with-tick';
 import ep from 'errorback-promise';
 import { LoopDeck } from './types';
-import { renderDecks } from './renderers/render-deck';
+import { renderDecks } from './renderers/render-decks';
+import { getAudioBufferFromFile } from './tasks/get-audio-buffer-from-file';
 
 var randomId = RandomId();
 var routeState: {
@@ -63,7 +64,20 @@ async function followRoute({ seed }: { seed: string }) {
       loopEndSecs: 10,
       amp: 1.0,
     });
-    renderDecks({ decks });
+    renderDecks({ decks, onNewDeckFile, onPlayLoop });
+  }
+
+  async function onNewDeckFile({ deck, file }: { deck: LoopDeck; file: File }) {
+    try {
+      deck.sampleBuffer = await getAudioBufferFromFile({ file });
+      renderDecks({ decks, onNewDeckFile, onPlayLoop });
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  function onPlayLoop({ deck }) {
+    console.log('play', deck);
   }
 }
 

@@ -1,6 +1,6 @@
 export interface LoopDeck {
   id: string;
-  sampleBuffer?: ArrayBuffer;
+  sampleBuffer?: AudioBuffer;
   pan: number;
   loopStartSecs: number;
   loopEndSecs: number;
