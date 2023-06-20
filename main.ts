@@ -13,6 +13,9 @@ import ep from 'errorback-promise';
 import { LoopDeck } from './types';
 import { renderDecks } from './renderers/render-decks';
 import { getAudioBufferFromFile } from './tasks/get-audio-buffer-from-file';
+import { MainOut } from './synths/main-out';
+import { playDeck } from './tasks/play-deck';
+import { SynthNode } from './synths/synth-node';
 
 var randomId = RandomId();
 var routeState: {
@@ -41,13 +44,7 @@ async function followRoute({ seed }: { seed: string }) {
     return;
   }
 
-  // var { error, values } = await ep(getCurrentContext);
-  // if (error) {
-  //   handleError(error);
-  //   return;
-  // }
-
-  // var ctx = values[0];
+  var mainOut: SynthNode;
 
   var random = seedrandom(seed);
   prob = Probable({ random });
@@ -56,7 +53,6 @@ async function followRoute({ seed }: { seed: string }) {
   wireMainControls({ onAddLoop });
 
   function onAddLoop() {
-    console.log('hey');
     decks.push({
       id: 'deck-' + randomId(4),
       pan: 0,
@@ -76,8 +72,24 @@ async function followRoute({ seed }: { seed: string }) {
     }
   }
 
-  function onPlayLoop({ deck }) {
-    console.log('play', deck);
+  async function onPlayLoop({ deck }: { deck: LoopDeck }) {
+    var loopNode = playDeck({ deck, outNode: await getMainOut() });
+    // TODO: Stop!
+  }
+
+  async function getMainOut() {
+    if (mainOut) {
+      return mainOut;
+    }
+
+    var { error, values } = await ep(getCurrentContext);
+    if (error) {
+      handleError(error);
+      return;
+    }
+    var ctx = values[0];
+    mainOut = MainOut({ ctx });
+    return mainOut;
   }
 }
 

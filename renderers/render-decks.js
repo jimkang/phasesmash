@@ -48,6 +48,7 @@ export function renderDecks({ decks, onNewDeckFile, onPlayLoop }) {
     });
 
   function appendControl(prop) {
+    // TODO: Actually update deck on change!
     var controlSel = newDeckControlsSel
       .append('li')
       .classed('control', true)
