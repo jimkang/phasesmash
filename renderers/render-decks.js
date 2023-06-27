@@ -2,7 +2,7 @@ import { select } from 'd3-selection';
 
 var numberProps = ['pan', 'loopStartSecs', 'loopEndSecs', 'amp'];
 
-export function renderDecks({ decks, onNewDeckFile, onPlayLoop }) {
+export function renderDecks({ decks, updateDeck, onPlayLoop }) {
   var deckSel = select('.decks-root')
     .selectAll('.deck')
     .data(decks, (deck) => deck.id);
@@ -48,7 +48,6 @@ export function renderDecks({ decks, onNewDeckFile, onPlayLoop }) {
     });
 
   function appendControl(prop) {
-    // TODO: Actually update deck on change!
     var controlSel = newDeckControlsSel
       .append('li')
       .classed('control', true)
@@ -64,7 +63,13 @@ export function renderDecks({ decks, onNewDeckFile, onPlayLoop }) {
     function updateControl(prop) {
       deckControlsRoot
         .select(`.control.${prop} > input`)
-        .attr('value', deck[prop]);
+        .attr('value', deck[prop])
+        .on('change', onInputChange);
+
+      function onInputChange() {
+        console.log('New value', this.value);
+        updateDeck({ deck, prop, value: this.value });
+      }
     }
   }
 
@@ -72,6 +77,6 @@ export function renderDecks({ decks, onNewDeckFile, onPlayLoop }) {
     if (this.files.length < 1) {
       return;
     }
-    onNewDeckFile({ deck, file: this.files[0] });
+    updateDeck({ deck, file: this.files[0] });
   }
 }

@@ -60,16 +60,32 @@ async function followRoute({ seed }: { seed: string }) {
       loopEndSecs: 10,
       amp: 1.0,
     });
-    renderDecks({ decks, onNewDeckFile, onPlayLoop });
+    renderDecks({ decks, updateDeck, onPlayLoop });
   }
 
-  async function onNewDeckFile({ deck, file }: { deck: LoopDeck; file: File }) {
-    try {
-      deck.sampleBuffer = await getAudioBufferFromFile({ file });
-      renderDecks({ decks, onNewDeckFile, onPlayLoop });
-    } catch (error) {
-      handleError(error);
+  async function updateDeck({
+    deck,
+    file,
+    prop,
+    value,
+  }: {
+    deck: LoopDeck;
+    file?: File;
+    prop?: string;
+    value?: string | number | AudioBuffer | undefined;
+  }) {
+    if (file) {
+      try {
+        deck.sampleBuffer = await getAudioBufferFromFile({ file });
+      } catch (error) {
+        handleError(error);
+      }
     }
+    if (prop) {
+      deck[prop as string] = value;
+    }
+
+    renderDecks({ decks, updateDeck, onPlayLoop });
   }
 
   async function onPlayLoop({ deck }: { deck: LoopDeck }) {

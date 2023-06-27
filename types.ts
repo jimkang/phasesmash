@@ -5,4 +5,5 @@ export interface LoopDeck {
   loopStartSecs: number;
   loopEndSecs: number;
   amp: number;
+  [index: string]: string | number | AudioBuffer | undefined;
 }
