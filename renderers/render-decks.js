@@ -2,7 +2,7 @@ import { select } from 'd3-selection';
 
 var numberProps = ['pan', 'loopStartSecs', 'loopEndSecs', 'amp'];
 
-export function renderDecks({ decks, updateDeck, onPlayLoop }) {
+export function renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop }) {
   var deckSel = select('.decks-root')
     .selectAll('.deck')
     .data(decks, (deck) => deck.id);
@@ -36,16 +36,26 @@ export function renderDecks({ decks, updateDeck, onPlayLoop }) {
     .text('Play loop')
     .on('click', (e, deck) => onPlayLoop({ deck }));
 
+  newDeckControlsSel
+    .append('li')
+    .classed('control', true)
+    .classed('stopLoop', true)
+    .append('button')
+    .text('Stop loop')
+    .on('click', (e, deck) => onStopLoop({ deck }));
+
   var shouldExistDeckControlsSel = newDeckSel
     .merge(deckSel)
     .select('.controls');
   shouldExistDeckControlsSel.each(updateControls);
   shouldExistDeckControlsSel
     .select('.playLoop > button')
-    .attr('disabled', (deck) => {
-      console.log('attr fn for', deck);
-      return deck.sampleBuffer ? null : 'disabled';
-    });
+    .attr('disabled', (deck) =>
+      deck.isPlaying || !deck.sampleBuffer ? 'disabled' : null
+    );
+  shouldExistDeckControlsSel
+    .select('.stopLoop > button')
+    .attr('disabled', (deck) => (!deck.isPlaying ? 'disabled' : null));
 
   function appendControl(prop) {
     var controlSel = newDeckControlsSel

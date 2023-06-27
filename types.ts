@@ -1,3 +1,5 @@
+import { Sampler } from './synths/synth-node';
+
 export interface LoopDeck {
   id: string;
   sampleBuffer?: AudioBuffer;
@@ -5,5 +7,14 @@ export interface LoopDeck {
   loopStartSecs: number;
   loopEndSecs: number;
   amp: number;
-  [index: string]: string | number | AudioBuffer | undefined;
+  isPlaying?: boolean;
+  samplerNode?: Sampler;
+  // Is this, like, all of the types?
+  [index: string]:
+    | string
+    | number
+    | AudioBuffer
+    | boolean
+    | Sampler
+    | undefined;
 }

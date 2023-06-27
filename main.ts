@@ -60,7 +60,8 @@ async function followRoute({ seed }: { seed: string }) {
       loopEndSecs: 10,
       amp: 1.0,
     });
-    renderDecks({ decks, updateDeck, onPlayLoop });
+
+    passStateToRenderDecks();
   }
 
   async function updateDeck({
@@ -85,12 +86,23 @@ async function followRoute({ seed }: { seed: string }) {
       deck[prop as string] = value;
     }
 
-    renderDecks({ decks, updateDeck, onPlayLoop });
+    passStateToRenderDecks();
   }
 
   async function onPlayLoop({ deck }: { deck: LoopDeck }) {
-    var loopNode = playDeck({ deck, outNode: await getMainOut() });
-    // TODO: Stop!
+    deck.samplerNode = playDeck({ deck, outNode: await getMainOut() });
+    deck.isPlaying = true;
+    passStateToRenderDecks();
+  }
+
+  async function onStopLoop({ deck }: { deck: LoopDeck }) {
+    deck.isPlaying = false;
+    deck?.samplerNode?.stop();
+    passStateToRenderDecks();
+  }
+
+  function passStateToRenderDecks() {
+    renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop });
   }
 
   async function getMainOut() {
