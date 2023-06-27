@@ -21,6 +21,6 @@ export function playDeck({
   amp.connect({ synthNode: panner, audioNode: null });
   panner.connect({ synthNode: outNode, audioNode: null });
 
-  sampler.play({ startTime: 0, duration: 100000 });
+  sampler.playLoop();
   return sampler;
 }
