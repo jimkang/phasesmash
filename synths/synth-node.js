@@ -41,7 +41,7 @@ export class VibratoGenerator extends SynthNode {
   constructor(ctx, params) {
     super(ctx, params);
     this.node = this.ctx.createOscillator();
-    this.node.frequency.value = this.params.rateFreq;
+    this.node.frequency.value = +this.params.rateFreq;
   }
 }
 
@@ -49,7 +49,7 @@ export class VibratoAmp extends SynthNode {
   constructor(ctx, params) {
     super(ctx, params);
     this.node = this.ctx.createGain();
-    this.node.gain.value = this.params.pitchVariance;
+    this.node.gain.value = +this.params.pitchVariance;
   }
   connect({ synthNode, audioNode }) {
     var connectTargetNode = audioNode || synthNode.node;
@@ -63,7 +63,7 @@ export class Gain extends SynthNode {
   constructor(ctx, params) {
     super(ctx, params);
     this.node = this.ctx.createGain();
-    this.node.gain.value = this.params.gain;
+    this.node.gain.value = +this.params.gain;
   }
   fadeOut(fadeSeconds) {
     this.node.gain.linearRampToValueAtTime(0, fadeSeconds);
@@ -80,13 +80,13 @@ export class Envelope extends SynthNode {
     this.node = this.ctx.createGain();
     this.envelopeLength = 1;
     if (params.envelopeLength) {
-      this.envelopeLength = params.envelopeLength;
+      this.envelopeLength = +params.envelopeLength;
     }
     if (params.envelopeLengthProportionToEvent) {
-      this.envelopeLength *= params.envelopeLengthProportionToEvent;
+      this.envelopeLength *= +params.envelopeLengthProportionToEvent;
     }
     this.playCurve = (params.playCurve ? params.playCurve : adsrCurve).map(
-      (x) => x * this.params.envelopeMaxGain
+      (x) => x * +this.params.envelopeMaxGain
     );
   }
   play({ startTime }) {
@@ -139,13 +139,13 @@ export class Compressor extends SynthNode {
   }
   play({ startTime }) {
     this.node.threshold.setValueAtTime(
-      this.params.compressorThreshold,
+      +this.params.compressorThreshold,
       startTime
     );
-    this.node.knee.setValueAtTime(this.params.compressorKnee, startTime);
-    this.node.ratio.setValueAtTime(this.params.compressorRatio, startTime);
-    this.node.attack.setValueAtTime(this.params.compressorAttack, startTime);
-    this.node.release.setValueAtTime(this.params.compressorRelease, startTime);
+    this.node.knee.setValueAtTime(+this.params.compressorKnee, startTime);
+    this.node.ratio.setValueAtTime(+this.params.compressorRatio, startTime);
+    this.node.attack.setValueAtTime(+this.params.compressorAttack, startTime);
+    this.node.release.setValueAtTime(+this.params.compressorRelease, startTime);
   }
 }
 
@@ -156,7 +156,7 @@ export class Sampler extends SynthNode {
     this.node.buffer = this.params.sampleBuffer;
     this.rampSeconds = 0.1;
     if (this.params.rampSeconds) {
-      this.rampSeconds = this.params.rampSeconds;
+      this.rampSeconds = +this.params.rampSeconds;
     }
     this.syncToParams();
   }
@@ -165,14 +165,14 @@ export class Sampler extends SynthNode {
   }
   syncToParams() {
     if (this.params.sampleDetune) {
-      this.node.detune.value = this.params.sampleDetune;
+      this.node.detune.value = +this.params.sampleDetune;
     }
     if (
       this.params.playbackRate &&
       this.params.playbackRate !== this.node.playbackRate.value
     ) {
       if (isNaN(this.node.playbackRate.value)) {
-        this.node.playbackRate.value = this.params.playbackRate;
+        this.node.playbackRate.value = +this.params.playbackRate;
       } else {
         if (this.params.enableRamp) {
           console.log(
@@ -185,12 +185,12 @@ export class Sampler extends SynthNode {
           );
           homemadeLinearRamp(
             this.node.playbackRate,
-            this.params.playbackRate,
+            +this.params.playbackRate,
             this.ctx,
-            this.rampSeconds
+            +this.rampSeconds
           );
         } else {
-          this.node.playbackRate.value = this.params.playbackRate;
+          this.node.playbackRate.value = +this.params.playbackRate;
         }
       }
     }
@@ -198,22 +198,22 @@ export class Sampler extends SynthNode {
     if (this.params.loop) {
       this.node.loop = this.params.loop;
       if (!isNaN(this.params.loopStart)) {
-        this.node.loopStart = this.params.loopStart;
+        this.node.loopStart = +this.params.loopStart;
       }
       if (!isNaN(this.params.loopEnd)) {
-        this.node.loopEnd = this.params.loopEnd;
+        this.node.loopEnd = +this.params.loopEnd;
       }
     }
   }
   play({ startTime, loopStart = 0, duration }) {
-    this.node.start(startTime, loopStart, duration);
+    this.node.start(+startTime, +loopStart, +duration);
   }
 }
 
 export class Panner extends SynthNode {
   constructor(ctx, params) {
     super(ctx, params);
-    this.node = ctx.createStereoPanner(this.ctx, { pan: params.pan });
+    this.node = new StereoPannerNode(this.ctx, { pan: +params.pan });
   }
   cancelScheduledRamps() {
     this.node.pan.cancelScheduledValues(this.ctx.currentTime);
@@ -225,9 +225,9 @@ export class Panner extends SynthNode {
     //);
     homemadeLinearRamp(
       this.node.pan,
-      this.params.pan,
+      +this.params.pan,
       this.ctx,
-      isNaN(this.params.rampSeconds) ? 0.1 : this.params.rampSeconds
+      isNaN(this.params.rampSeconds) ? 0.1 : +this.params.rampSeconds
     );
   }
   play() {}
