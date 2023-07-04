@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["tasks/*", "synths/*.ts", "main.ts"]
+  "include": ["tasks/*", "synths/*.ts", "main.ts", "electron"]
 }
