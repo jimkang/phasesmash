@@ -7,8 +7,6 @@ import { wireMainControls } from './renderers/wire-controls';
 import seedrandom from 'seedrandom';
 import RandomId from '@jimkang/randomid';
 import { createProbable as Probable } from 'probable';
-import { tonalityDiamondPitches } from './tonality-diamond';
-import { interpolateValueWithTick } from './tasks/interpolate-with-tick';
 import ep from 'errorback-promise';
 import { LoopDeck } from './types';
 import { renderDecks } from './renderers/render-decks';
@@ -20,14 +18,14 @@ import { SynthNode } from './synths/synth-node';
 var randomId = RandomId();
 var routeState: {
   routeFromHash: () => void;
-  addToRoute: (arg0: { seed: any }) => void;
+  addToRoute: (arg0: { seed: string }) => void;
 };
 var { getCurrentContext } = ContextKeeper();
 var prob;
 var decks: LoopDeck[] = [];
 
 (async function go() {
-  window.onerror = reportTopLevelError;
+  window.addEventListener('error', reportTopLevelError);
   renderVersion();
 
   routeState = RouteState({
@@ -77,6 +75,7 @@ async function followRoute({ seed }: { seed: string }) {
   }) {
     if (file) {
       try {
+        deck.samplePath = file.path;
         deck.sampleBuffer = await getAudioBufferFromFile({ file });
       } catch (error) {
         handleError(error);
@@ -121,14 +120,8 @@ async function followRoute({ seed }: { seed: string }) {
   }
 }
 
-function reportTopLevelError(
-  _msg: any,
-  _url: any,
-  _lineNo: any,
-  _columnNo: any,
-  error: any
-) {
-  handleError(error);
+function reportTopLevelError(event: ErrorEvent) {
+  handleError(event.error);
 }
 
 function renderVersion() {

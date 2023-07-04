@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["tasks/*", "synths/*.ts", "main.ts", "electron"]
+  "include": ["tasks/*", "synths/*.ts", "allow-js.d.ts", "main.ts", "electron"]
 }
