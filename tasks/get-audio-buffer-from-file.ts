@@ -1,3 +1,4 @@
+/* global fsPromises */
 import { decodeArrayBuffer } from './decode-array-buffer';
 
 // #throws
@@ -7,6 +8,21 @@ export async function getAudioBufferFromFile({
   file: File;
 }): Promise<AudioBuffer> {
   let arrayBuffer = await file.arrayBuffer();
+  return getAudioBuffer(arrayBuffer);
+}
+
+// #throws
+export async function getAudioBufferFromFilePath({
+  filePath,
+}: {
+  filePath: string;
+}) {
+  console.log('filePath', filePath);
+  var typedBufferView: Uint8Array = await window.fsPromises.readFile(filePath);
+  return getAudioBuffer(typedBufferView.buffer);
+}
+
+function getAudioBuffer(arrayBuffer: ArrayBuffer) {
   return new Promise(executor);
 
   function executor(

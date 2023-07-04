@@ -1,4 +1,4 @@
-"use strict";function d(e=["complete","interactive"]){return new Promise(t=>{e.includes(document.readyState)?t(!0):document.addEventListener("readystatechange",()=>{e.includes(document.readyState)&&t(!0)})})}const o={append(e,t){Array.from(e.children).find(n=>n===t)||e.appendChild(t)},remove(e,t){Array.from(e.children).find(n=>n===t)&&e.removeChild(t)}};function r(){const e="loaders-css__square-spin",t=`
+"use strict";const o=require("electron");o.contextBridge.exposeInMainWorld("fsPromises",{readFile(e){return o.ipcRenderer.invoke("readFile",e)},writeFile(e,t){return o.ipcRenderer.invoke("writeFile",e,t)}});function d(e=["complete","interactive"]){return new Promise(t=>{e.includes(document.readyState)?t(!0):document.addEventListener("readystatechange",()=>{e.includes(document.readyState)&&t(!0)})})}const r={append(e,t){Array.from(e.children).find(n=>n===t)||e.appendChild(t)},remove(e,t){Array.from(e.children).find(n=>n===t)&&e.removeChild(t)}};function s(){const e="loaders-css__square-spin",t=`
 @keyframes square-spin {
   25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
   50% { transform: perspective(100px) rotateX(180deg) rotateY(180deg); }
@@ -24,4 +24,4 @@
   background: #282c34;
   z-index: 9;
 }
-    `,n=document.createElement("style"),a=document.createElement("div");return n.id="app-loading-style",n.innerHTML=t,a.className="app-loading-wrap",a.innerHTML=`<div class="${e}"><div></div></div>`,{appendLoading(){o.append(document.head,n),o.append(document.body,a)},removeLoading(){o.remove(document.head,n),o.remove(document.body,a)}}}const{appendLoading:s,removeLoading:i}=r();d().then(s);window.onmessage=e=>{e.data.payload==="removeLoading"&&i()};setTimeout(i,4999);
+    `,n=document.createElement("style"),i=document.createElement("div");return n.id="app-loading-style",n.innerHTML=t,i.className="app-loading-wrap",i.innerHTML=`<div class="${e}"><div></div></div>`,{appendLoading(){r.append(document.head,n),r.append(document.body,i)},removeLoading(){r.remove(document.head,n),r.remove(document.body,i)}}}const{appendLoading:c,removeLoading:a}=s();d().then(c);window.onmessage=e=>{e.data.payload==="removeLoading"&&a()};setTimeout(a,4999);

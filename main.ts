@@ -14,6 +14,7 @@ import { getAudioBufferFromFile } from './tasks/get-audio-buffer-from-file';
 import { MainOut } from './synths/main-out';
 import { playDeck } from './tasks/play-deck';
 import { SynthNode } from './synths/synth-node';
+import { deserializeDecks, serializeDecks } from './tasks/serialize';
 
 var randomId = RandomId();
 var routeState: {
@@ -40,6 +41,17 @@ async function followRoute({ seed }: { seed: string }) {
   if (!seed) {
     routeState.addToRoute({ seed: randomId(8) });
     return;
+  }
+
+  if (localStorage.decks) {
+    try {
+      decks = await deserializeDecks({ serialized: localStorage.decks });
+    } catch (error) {
+      // TODO: Dialog about not being able to deserialize.
+      handleError(error);
+      // delete localStorage.decks;
+    }
+    passStateToRenderDecks();
   }
 
   var mainOut: SynthNode;
@@ -72,7 +84,7 @@ async function followRoute({ seed }: { seed: string }) {
     file?: File;
     prop?: string;
     value?: string | number | AudioBuffer | undefined;
-  }) {
+  }): Promise<void> {
     if (file) {
       try {
         deck.samplePath = file.path;
@@ -86,6 +98,7 @@ async function followRoute({ seed }: { seed: string }) {
     }
 
     passStateToRenderDecks();
+    localStorage.decks = serializeDecks({ decks });
   }
 
   async function onPlayLoop({ deck }: { deck: LoopDeck }) {

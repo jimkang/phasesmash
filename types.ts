@@ -2,6 +2,7 @@ import { Sampler } from './synths/synth-node';
 
 export interface LoopDeck {
   id: string;
+  samplePath?: string;
   sampleBuffer?: AudioBuffer;
   pan: number;
   loopStartSecs: number;
