@@ -17,8 +17,7 @@ export async function getAudioBufferFromFilePath({
 }: {
   filePath: string;
 }) {
-  console.log('filePath', filePath);
-  var typedBufferView: Uint8Array = await window.fsPromises.readFile(filePath);
+  var typedBufferView: Uint8Array = await fsPromises.readFile(filePath);
   return getAudioBuffer(typedBufferView.buffer);
 }
 

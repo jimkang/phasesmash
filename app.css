@@ -39,6 +39,10 @@ button {
   display: flex;
 }
 
+.control.sampleFile {
+  flex-wrap: wrap;
+}
+
 a:link {
   color: #222;
   font-weight: 700;

@@ -27,6 +27,7 @@ export function renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop }) {
     .attr('accept', 'audio/*, .m4a,.ogg,.mp3,.wav')
     .attr('name', 'sampleFile')
     .on('change', onFileChange);
+  newFileControlSel.append('div').classed('samplePath', true);
 
   newDeckControlsSel
     .append('li')
@@ -56,6 +57,9 @@ export function renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop }) {
   shouldExistDeckControlsSel
     .select('.stopLoop > button')
     .attr('disabled', (deck) => (!deck.isPlaying ? 'disabled' : null));
+  shouldExistDeckControlsSel
+    .select('.samplePath')
+    .text((deck) => deck.samplePath ?? 'No file selected');
 
   function appendControl(prop) {
     var controlSel = newDeckControlsSel
