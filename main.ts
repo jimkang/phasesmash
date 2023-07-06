@@ -1,3 +1,4 @@
+/* global electronDialog */
 import './app.css';
 import RouteState from 'route-state';
 import handleError from 'handle-error-web';
@@ -14,7 +15,16 @@ import { getAudioBufferFromFile } from './tasks/get-audio-buffer-from-file';
 import { MainOut } from './synths/main-out';
 import { playDeck } from './tasks/play-deck';
 import { SynthNode } from './synths/synth-node';
-import { deserializeDecks, serializeDecks } from './tasks/serialize';
+import {
+  exportDecks,
+  importDecks,
+  loadDecks,
+  saveDecks,
+} from './updaters/saving-and-loading';
+
+var deckSetFileFilters = [
+  { name: 'Loop deck set files', extensions: ['json'] },
+];
 
 var randomId = RandomId();
 var routeState: {
@@ -43,14 +53,9 @@ async function followRoute({ seed }: { seed: string }) {
     return;
   }
 
-  if (localStorage.decks) {
-    try {
-      decks = await deserializeDecks({ serialized: localStorage.decks });
-    } catch (error) {
-      // TODO: Dialog about not being able to deserialize.
-      handleError(error);
-      // delete localStorage.decks;
-    }
+  var loadedDecks = await loadDecks();
+  if (loadedDecks) {
+    decks = loadedDecks;
     passStateToRenderDecks();
   }
 
@@ -60,7 +65,13 @@ async function followRoute({ seed }: { seed: string }) {
   prob = Probable({ random });
   prob.roll(2);
 
-  wireMainControls({ onAddLoop });
+  wireMainControls({
+    onAddLoop,
+    onPlayAll,
+    onStopAll,
+    onImportClick,
+    onExportClick,
+  });
 
   function onAddLoop() {
     decks.push({
@@ -72,6 +83,49 @@ async function followRoute({ seed }: { seed: string }) {
     });
 
     passStateToRenderDecks();
+  }
+
+  function onPlayAll() {
+    // We don't need to wait for these promises to resolve.
+    decks.forEach((deck) => onPlayLoop({ deck }));
+  }
+
+  function onStopAll() {
+    decks.forEach((deck) => onStopLoop({ deck }));
+  }
+
+  async function onImportClick() {
+    try {
+      var { canceled, filePaths } = await electronDialog.showOpenDialog({
+        title: 'Pick a deck set file',
+        filters: deckSetFileFilters,
+        properties: ['openFile'],
+      });
+      if (!canceled && filePaths && filePaths.length > 0) {
+        let loadedDecks = await importDecks({ filePath: filePaths[0] });
+        if (loadedDecks) {
+          decks = loadedDecks;
+          passStateToRenderDecks();
+        }
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  }
+
+  async function onExportClick() {
+    try {
+      var { canceled, filePath } = await electronDialog.showSaveDialog({
+        title: 'Save deck set to this file',
+        filters: deckSetFileFilters,
+      });
+      if (!canceled) {
+        exportDecks({ filePath });
+        // TODO: Notify about export success.
+      }
+    } catch (error) {
+      handleError(error);
+    }
   }
 
   async function updateDeck({
@@ -98,7 +152,7 @@ async function followRoute({ seed }: { seed: string }) {
     }
 
     passStateToRenderDecks();
-    localStorage.decks = serializeDecks({ decks });
+    saveDecks(decks);
   }
 
   async function onPlayLoop({ deck }: { deck: LoopDeck }) {
@@ -113,8 +167,18 @@ async function followRoute({ seed }: { seed: string }) {
     passStateToRenderDecks();
   }
 
+  async function onDeleteLoop({ deck }: { deck: LoopDeck }) {
+    deck?.samplerNode?.stop();
+    const deleteIndex = decks.findIndex(
+      (deckToCheck) => deckToCheck.id === deck.id
+    );
+    decks.splice(deleteIndex, 1);
+    saveDecks(decks);
+    passStateToRenderDecks();
+  }
+
   function passStateToRenderDecks() {
-    renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop });
+    renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop, onDeleteLoop });
   }
 
   async function getMainOut() {

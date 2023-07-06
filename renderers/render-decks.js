@@ -2,7 +2,13 @@ import { select } from 'd3-selection';
 
 var numberProps = ['pan', 'loopStartSecs', 'loopEndSecs', 'amp'];
 
-export function renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop }) {
+export function renderDecks({
+  decks,
+  updateDeck,
+  onPlayLoop,
+  onStopLoop,
+  onDeleteLoop,
+}) {
   var deckSel = select('.decks-root')
     .selectAll('.deck')
     .data(decks, (deck) => deck.id);
@@ -44,6 +50,14 @@ export function renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop }) {
     .append('button')
     .text('Stop loop')
     .on('click', (e, deck) => onStopLoop({ deck }));
+
+  newDeckControlsSel
+    .append('li')
+    .classed('control', true)
+    .classed('deleteLoop', true)
+    .append('button')
+    .text('Delete loop')
+    .on('click', (e, deck) => onDeleteLoop({ deck }));
 
   var shouldExistDeckControlsSel = newDeckSel
     .merge(deckSel)

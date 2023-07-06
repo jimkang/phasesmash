@@ -2,8 +2,19 @@ import { LoopDeck } from '../types';
 import { getAudioBufferFromFilePath } from './get-audio-buffer-from-file';
 
 var unserializableKeys = ['sampleBuffer', 'samplerNode', 'isPlaying'];
-export function serializeDecks({ decks }: { decks: LoopDeck[] }) {
+
+export function serializeDecks({
+  decks,
+  niceFormatting,
+}: {
+  decks: LoopDeck[];
+  niceFormatting?: boolean;
+}) {
   var serializableDecks = decks.map(getSerializableDeck);
+  if (niceFormatting) {
+    return JSON.stringify(serializableDecks, null, 2);
+  }
+
   return JSON.stringify(serializableDecks);
 }
 

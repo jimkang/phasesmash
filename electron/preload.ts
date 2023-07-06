@@ -1,11 +1,20 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, SaveDialogOptions } from 'electron';
 
 contextBridge.exposeInMainWorld('fsPromises', {
-  readFile(filePath: string) {
-    return ipcRenderer.invoke('readFile', filePath);
+  readFile(filePath: string, opts?: Record<string, string>) {
+    return ipcRenderer.invoke('readFile', filePath, opts);
   },
   writeFile(filePath: string, buffer: Buffer) {
     return ipcRenderer.invoke('writeFile', filePath, buffer);
+  },
+});
+
+contextBridge.exposeInMainWorld('electronDialog', {
+  showSaveDialog(opts: SaveDialogOptions) {
+    return ipcRenderer.invoke('showSaveDialog', opts);
+  },
+  showOpenDialog(opts: OpenDialogOptions) {
+    return ipcRenderer.invoke('showOpenDialog', opts);
   },
 });
 

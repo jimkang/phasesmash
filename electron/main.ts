@@ -1,6 +1,15 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  IpcMainInvokeEvent,
+  OpenDialogOptions,
+  SaveDialogOptions,
+} from 'electron';
 import path from 'node:path';
 import fsPromises from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
 
 // The built directory structure
 //
@@ -47,14 +56,37 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(() => {
   ipcMain.handle('readFile', runFileRead);
-  ipcMain.handle('writeFiles', runFileWrite);
+  ipcMain.handle('writeFile', runFileWrite);
+  ipcMain.handle('showSaveDialog', runShowSaveDialog);
+  ipcMain.handle('showOpenDialog', runShowOpenDialog);
   createWindow();
 });
 
-function runFileRead(e: Event, filePath: string) {
-  return fsPromises.readFile(filePath);
+function runFileRead(
+  _e: IpcMainInvokeEvent,
+  filePath: string,
+  opts: Record<string, string>
+) {
+  return fsPromises.readFile(filePath, opts);
 }
 
-function runFileWrite(e: Event, filePath: string, buffer) {
-  return fsPromises.writeFile(filePath, buffer);
+function runFileWrite(
+  _e: IpcMainInvokeEvent,
+  filePath: string,
+  bufferOrString: string | Buffer
+) {
+  if (Buffer.isBuffer(bufferOrString)) {
+    return fsPromises.writeFile(filePath, bufferOrString);
+  }
+  if (typeof bufferOrString === 'string') {
+    return fsPromises.writeFile(filePath, Buffer.from(bufferOrString, 'utf8'));
+  }
+}
+
+function runShowSaveDialog(_e: IpcMainInvokeEvent, opts: SaveDialogOptions) {
+  return dialog.showSaveDialog(opts);
+}
+
+function runShowOpenDialog(_e: IpcMainInvokeEvent, opts: OpenDialogOptions) {
+  return dialog.showOpenDialog(opts);
 }
