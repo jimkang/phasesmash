@@ -80,6 +80,7 @@ async function followRoute({ seed }: { seed: string }) {
       loopStartSecs: 0,
       loopEndSecs: 10,
       amp: 1.0,
+      numberOfLoopsPlayed: 0,
     });
 
     passStateToRenderDecks();
@@ -167,7 +168,13 @@ async function followRoute({ seed }: { seed: string }) {
 
   async function onStopLoop({ deck }: { deck: LoopDeck }) {
     deck.isPlaying = false;
+    if (deck.nextPlayKey) {
+      window.clearTimeout(deck.nextPlayKey);
+      deck.nextPlayKey = undefined;
+    }
     deck?.samplerNode?.stop();
+    deck.numberOfLoopsPlayed = 0;
+    deck.beginDelayAlreadyDone = false;
     passStateToRenderDecks();
   }
 

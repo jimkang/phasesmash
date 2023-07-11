@@ -6,7 +6,7 @@ var numberProps = [
   'loopEndSecs',
   'amp',
   'beginPlayAtSecs',
-  'durationToPlaySecs',
+  'numberOfTimesToLoop',
 ];
 
 export function renderDecks({

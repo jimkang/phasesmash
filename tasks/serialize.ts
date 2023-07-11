@@ -1,7 +1,13 @@
 import { LoopDeck } from '../types';
 import { getAudioBufferFromFilePath } from './get-audio-buffer-from-file';
 
-var unserializableKeys = ['sampleBuffer', 'samplerNode', 'isPlaying'];
+var unserializableKeys = [
+  'sampleBuffer',
+  'samplerNode',
+  'isPlaying',
+  'beginDelayAlreadyDone',
+  'numberOfLoopsPlayed',
+];
 
 export function serializeDecks({
   decks,
@@ -42,5 +48,6 @@ async function getDeckFromDeserializedObject(deckObject: unknown) {
       filePath: deck.samplePath,
     });
   }
+  deck.numberOfLoopsPlayed = 0;
   return deck;
 }

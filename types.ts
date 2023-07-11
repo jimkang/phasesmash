@@ -10,8 +10,11 @@ export interface LoopDeck {
   amp: number;
   isPlaying?: boolean;
   samplerNode?: Sampler;
+  nextPlayKey?: number;
   beginPlayAtSecs?: number;
-  durationToPlaySecs?: number;
+  beginDelayAlreadyDone?: boolean;
+  numberOfTimesToLoop?: number;
+  numberOfLoopsPlayed: number;
   // Is this, like, all of the types?
   [index: string]:
     | string
