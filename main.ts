@@ -156,7 +156,11 @@ async function followRoute({ seed }: { seed: string }) {
   }
 
   async function onPlayLoop({ deck }: { deck: LoopDeck }) {
-    deck.samplerNode = playDeck({ deck, outNode: await getMainOut() });
+    deck.samplerNode = playDeck({
+      deck,
+      outNode: await getMainOut(),
+      deckCount: decks.length,
+    });
     deck.isPlaying = true;
     passStateToRenderDecks();
   }
