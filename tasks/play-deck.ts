@@ -21,6 +21,9 @@ export function playDeck({
   amp.connect({ synthNode: panner, audioNode: null });
   panner.connect({ synthNode: outNode, audioNode: null });
 
-  sampler.playLoop();
+  sampler.playLoop({
+    startSecs: deck.beginPlayAtSecs,
+    durationSecs: deck.durationToPlaySecs,
+  });
   return sampler;
 }

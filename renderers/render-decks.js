@@ -1,6 +1,13 @@
 import { select } from 'd3-selection';
 
-var numberProps = ['pan', 'loopStartSecs', 'loopEndSecs', 'amp'];
+var numberProps = [
+  'pan',
+  'loopStartSecs',
+  'loopEndSecs',
+  'amp',
+  'beginPlayAtSecs',
+  'durationToPlaySecs',
+];
 
 export function renderDecks({
   decks,

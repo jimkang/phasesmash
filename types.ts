@@ -10,6 +10,8 @@ export interface LoopDeck {
   amp: number;
   isPlaying?: boolean;
   samplerNode?: Sampler;
+  beginPlayAtSecs?: number;
+  durationToPlaySecs?: number;
   // Is this, like, all of the types?
   [index: string]:
     | string
