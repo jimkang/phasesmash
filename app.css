@@ -3,8 +3,6 @@ body {
   font-family: Helvetica, sans-serif;
   background: #fff;
   color: #333;
-  margin: 0;
-  margin-bottom: 2rem;
 }
 
 .invisible {
@@ -24,12 +22,10 @@ ul {
 }
 
 button {
-  font-size: 1.2em;
   cursor: pointer;
-  padding: 0.5em;
   border-radius: 0.5em;
-  border-width: 8px;
-  border-color: #333;
+  border-width: 2px;
+  border-color: #555;
   border-style: solid;
   background-color: #fff;
   min-width: 44px;
