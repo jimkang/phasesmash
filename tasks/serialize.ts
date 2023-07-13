@@ -1,7 +1,7 @@
 import { LoopDeck } from '../types';
 import { getAudioBufferFromFilePath } from './get-audio-buffer-from-file';
 
-var unserializableKeys = [
+export var unserializableKeys = [
   'sampleBuffer',
   'samplerNode',
   'isPlaying',

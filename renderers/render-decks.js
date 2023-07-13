@@ -15,6 +15,7 @@ export function renderDecks({
   onPlayLoop,
   onStopLoop,
   onDeleteLoop,
+  onDuplicateLoop,
 }) {
   var deckSel = select('.decks-root')
     .selectAll('.deck')
@@ -42,29 +43,34 @@ export function renderDecks({
     .on('change', onFileChange);
   newFileControlSel.append('div').classed('samplePath', true);
 
-  newDeckControlsSel
-    .append('li')
-    .classed('control', true)
-    .classed('playLoop', true)
-    .append('button')
-    .text('Play loop')
-    .on('click', (e, deck) => onPlayLoop({ deck }));
+  var newButtonPaneSel = newDeckControlsSel
+    .append('div')
+    .classed('button-pane', true);
 
-  newDeckControlsSel
-    .append('li')
-    .classed('control', true)
-    .classed('stopLoop', true)
-    .append('button')
-    .text('Stop loop')
-    .on('click', (e, deck) => onStopLoop({ deck }));
-
-  newDeckControlsSel
-    .append('li')
-    .classed('control', true)
-    .classed('deleteLoop', true)
-    .append('button')
-    .text('Delete loop')
-    .on('click', (e, deck) => onDeleteLoop({ deck }));
+  addButton({
+    parentSel: newButtonPaneSel,
+    cssClass: 'playLoop',
+    text: 'Play loop',
+    onClick: onPlayLoop,
+  });
+  addButton({
+    parentSel: newButtonPaneSel,
+    cssClass: 'stopLoop',
+    text: 'Stop loop',
+    onClick: onStopLoop,
+  });
+  addButton({
+    parentSel: newButtonPaneSel,
+    cssClass: 'deleteLoop',
+    text: 'Delete loop',
+    onClick: onDeleteLoop,
+  });
+  addButton({
+    parentSel: newButtonPaneSel,
+    cssClass: 'duplicateLoop',
+    text: 'Duplicate loop',
+    onClick: onDuplicateLoop,
+  });
 
   var shouldExistDeckControlsSel = newDeckSel
     .merge(deckSel)
@@ -114,4 +120,13 @@ export function renderDecks({
     }
     updateDeck({ deck, file: this.files[0] });
   }
+}
+function addButton({ parentSel, cssClass, text, onClick }) {
+  parentSel
+    .append('li')
+    .classed('control', true)
+    .classed(cssClass, true)
+    .append('button')
+    .text(text)
+    .on('click', (e, deck) => onClick({ deck }));
 }

@@ -11,7 +11,10 @@ import { createProbable as Probable } from 'probable';
 import ep from 'errorback-promise';
 import { LoopDeck } from './types';
 import { renderDecks } from './renderers/render-decks';
-import { getAudioBufferFromFile } from './tasks/get-audio-buffer-from-file';
+import {
+  getAudioBufferFromFile,
+  getAudioBufferFromFilePath,
+} from './tasks/get-audio-buffer-from-file';
 import { MainOut } from './synths/main-out';
 import { playDeck } from './tasks/play-deck';
 import { SynthNode } from './synths/synth-node';
@@ -21,6 +24,7 @@ import {
   loadDecks,
   saveDecks,
 } from './updaters/saving-and-loading';
+import { unserializableKeys } from './tasks/serialize';
 
 var deckSetFileFilters = [
   { name: 'Loop deck set files', extensions: ['json'] },
@@ -83,6 +87,7 @@ async function followRoute({ seed }: { seed: string }) {
       numberOfLoopsPlayed: 0,
     });
 
+    saveDecks(decks);
     passStateToRenderDecks();
   }
 
@@ -188,8 +193,30 @@ async function followRoute({ seed }: { seed: string }) {
     passStateToRenderDecks();
   }
 
+  async function onDuplicateLoop({ deck }: { deck: LoopDeck }) {
+    var dupe: LoopDeck = Object.assign({}, deck);
+    for (let unserializableKey in unserializableKeys) {
+      dupe[unserializableKey] = undefined;
+    }
+    if (dupe.samplePath) {
+      dupe.sampleBuffer = await getAudioBufferFromFilePath({
+        filePath: dupe.samplePath,
+      });
+    }
+    decks.push(dupe);
+    saveDecks(decks);
+    passStateToRenderDecks();
+  }
+
   function passStateToRenderDecks() {
-    renderDecks({ decks, updateDeck, onPlayLoop, onStopLoop, onDeleteLoop });
+    renderDecks({
+      decks,
+      updateDeck,
+      onPlayLoop,
+      onStopLoop,
+      onDeleteLoop,
+      onDuplicateLoop,
+    });
   }
 
   async function getMainOut() {

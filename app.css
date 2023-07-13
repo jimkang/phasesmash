@@ -94,6 +94,12 @@ a:visited {
   gap: 1em;
 }
 
+.button-pane {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em;
+}
+
 @media all and (max-height: 568px) {
   body {
     font-size: 18px;
