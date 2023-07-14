@@ -20,9 +20,6 @@ export function playDeck({
 
   var sampler = new Sampler(outNode?.ctx, {
     sampleBuffer: deck.sampleBuffer,
-    loop: true,
-    loopStart: deck.loopStartSecs,
-    loopEnd: deck.loopEndSecs,
   });
   var amp = new Gain(outNode?.ctx, { gain: deck.amp / deckCount });
   var panner = new Panner(outNode?.ctx, { pan: deck.pan });
