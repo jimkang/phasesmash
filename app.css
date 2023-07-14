@@ -39,6 +39,10 @@ button {
   flex-wrap: wrap;
 }
 
+.samplePath {
+  word-break: break-all;
+}
+
 a:link {
   color: #222;
   font-weight: 700;
