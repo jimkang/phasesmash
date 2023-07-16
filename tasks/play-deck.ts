@@ -7,6 +7,8 @@ import {
   SynthNode,
 } from '../synths/synth-node';
 
+var noClipCurve = [0, 1, 1, 1, 1, 1, 0.95, 0.9, 0.8, 0.72, 0];
+
 export function playDeck({
   deck,
   outNode,
@@ -21,9 +23,12 @@ export function playDeck({
   var sampler = new Sampler(outNode?.ctx, {
     sampleBuffer: deck.sampleBuffer,
   });
-  var amp = new Gain(outNode?.ctx, { gain: deck.amp / deckCount });
+  var amp = new Gain(outNode?.ctx, { gain: deck.amp });
   var panner = new Panner(outNode?.ctx, { pan: deck.pan });
-  var envelope = new Envelope(outNode?.ctx, { envelopeLength: duration });
+  var envelope = new Envelope(outNode?.ctx, {
+    envelopeLength: duration * 0.99,
+    playCurve: noClipCurve,
+  });
 
   sampler.connect({ synthNode: amp, audioNode: null });
   amp.connect({ synthNode: envelope, audioNode: null });
@@ -48,6 +53,7 @@ export function playDeck({
       loopStart: deck.loopStartSecs,
       duration,
     });
+    envelope.play();
     deck.numberOfLoopsPlayed += 1;
 
     if (

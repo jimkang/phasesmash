@@ -1,6 +1,6 @@
 //var SoundbankReverb = require('soundbank-reverb');
 
-var adsrCurve = new Float32Array([
+export var adsrCurve = new Float32Array([
   0, 0.5, 1, 1, 1, 1, 0.95, 0.9, 0.8, 0.72, 0.6, 0.3, 0.1, 0,
 ]);
 //var asCurve = adsrCurve.slice(0, 3);
@@ -82,43 +82,58 @@ export class Envelope extends SynthNode {
     if (params.envelopeLength) {
       this.envelopeLength = +params.envelopeLength;
     }
-    if (params.envelopeLengthProportionToEvent) {
-      this.envelopeLength *= +params.envelopeLengthProportionToEvent;
+    this.playCurve = params.playCurve;
+  }
+  play() {
+    if (this.playCurve) {
+      this.node.gain.setValueCurveAtTime(
+        this.playCurve,
+        this.ctx.currentTime,
+        this.envelopeLength
+      );
     }
-    this.playCurve = (params.playCurve ? params.playCurve : adsrCurve).map(
-      (x) => x * +this.params.envelopeMaxGain
-    );
-  }
-  play({ startTime }) {
-    this.node.gain.value = 0;
-    //this.node.gain.setValueCurveAtTime(adsrCurve, startTime, envelopeLength);
-    this.node.gain.setValueCurveAtTime(
-      this.playCurve,
-      startTime,
-      this.envelopeLength
-    );
-    this.envelopeCompletionTime = startTime + this.envelopeLength * 1.1;
-  }
-  cancelScheduledRamps() {
-    this.node.gain.cancelScheduledValues(0); //this.ctx.currentTime);
-  }
-  linearRampTo(fadeSeconds, value) {
-    this.node.gain.cancelScheduledValues(0); //this.ctx.currentTime);
-
-    // If an envelope is still running its curve, that needs to finish first.
-    var secondsUntilEnvelopeCompletion = 0;
-    const now = this.ctx.currentTime;
-    if (now < this.envelopeCompletionTime) {
-      secondsUntilEnvelopeCompletion = this.envelopeCompletionTime - now;
-    }
-    // We will get a exception if we try to add a ramp event while the previous
-    // value curve is still going.
-    setTimeout(
-      () => this.node.gain.linearRampToValueAtTime(value, fadeSeconds),
-      secondsUntilEnvelopeCompletion * 1000
-    );
   }
 }
+
+// export class ZeroEndsEnvelope extends SynthNode {
+//   constructor(ctx, params) {
+//     super(ctx, params);
+//     this.node = this.ctx.createGain();
+//     if (!params.envelopeLength) {
+//       throw new Error('ZeroEndsEnvelope must have an envelopeLength');
+//     }
+
+//     const envelopeLength = +params.envelopeLength;
+
+//     this.rampUpTime = envelopeLength / 20;
+//     if (this.rampUpTime < 0.1) {
+//       this.rampUpTime = 0.1;
+//     } else if (this.rampUpTime > 1.0) {
+//       this.rampUpTime = 1.0;
+//     }
+
+//     var rampDownTime = envelopeLength / 10;
+//     if (rampDownTime < 0.1) {
+//       rampDownTime = 0.1;
+//     } else if (rampDownTime > 2.0) {
+//       rampDownTime = 2.0;
+//     }
+//     this.rampDownTime = rampDownTime;
+//     this.rampDownStart = envelopeLength - rampDownTime;
+//   }
+//   play() {
+//     // this.node.gain.value = 0;
+//     this.node.gain.exponentialRampToValueAtTime(
+//       1.0,
+//       this.ctx.currentTime + this.rampUpTime
+//     );
+//     this.node.gain.setTargetAtTime(
+//       0.0,
+//       this.ctx.currentTime + this.rampDownStart,
+//       this.rampDownTime / 5
+//     );
+//   }
+// }
 
 //export class Reverb extends SynthNode {
 //constructor(ctx, params) {
