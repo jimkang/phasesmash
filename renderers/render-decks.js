@@ -27,6 +27,19 @@ export function renderDecks({
   var newDeckControlsSel = newDeckSel.append('ul').classed('controls', true);
   numberProps.forEach(appendControl);
 
+  var checkContainerSel = newDeckControlsSel
+    .append('li')
+    .classed('control', true)
+    .classed('bypassEnvelope', true);
+  checkContainerSel
+    .append('label')
+    .attr('for', 'bypassEnvelope')
+    .text('bypassEnvelope');
+  checkContainerSel
+    .append('input')
+    .attr('type', 'checkbox')
+    .attr('name', 'bypassEnvelope');
+
   var newFileControlSel = newDeckControlsSel
     .append('li')
     .classed('control', true)
@@ -76,6 +89,12 @@ export function renderDecks({
     .merge(deckSel)
     .select('.controls');
   shouldExistDeckControlsSel.each(updateControls);
+
+  var bypassEnvelopeInput = shouldExistDeckControlsSel.select(
+    '.bypassEnvelope input'
+  );
+  bypassEnvelopeInput.each(updateBypassEnvelopeInput);
+
   shouldExistDeckControlsSel
     .select('.playLoop > button')
     .attr('disabled', (deck) =>
@@ -114,6 +133,14 @@ export function renderDecks({
     }
   }
 
+  function updateBypassEnvelopeInput(deck) {
+    this.checked = !!deck.bypassEnvelope;
+
+    select(this).on('change', (e, deck) =>
+      updateDeck({ deck, prop: 'bypassEnvelope', value: this.checked })
+    );
+  }
+
   function onFileChange(e, deck) {
     if (this.files.length < 1) {
       return;
@@ -121,6 +148,7 @@ export function renderDecks({
     updateDeck({ deck, file: this.files[0] });
   }
 }
+
 function addButton({ parentSel, cssClass, text, onClick }) {
   parentSel
     .append('li')

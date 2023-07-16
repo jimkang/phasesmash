@@ -15,6 +15,7 @@ export interface LoopDeck {
   beginDelayAlreadyDone?: boolean;
   numberOfTimesToLoop?: number;
   numberOfLoopsPlayed: number;
+  bypassEnvelope?: boolean;
   // Is this, like, all of the types?
   [index: string]:
     | string

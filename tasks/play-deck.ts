@@ -53,7 +53,9 @@ export function playDeck({
       loopStart: deck.loopStartSecs,
       duration,
     });
-    envelope.play();
+    if (!deck.bypassEnvelope) {
+      envelope.play();
+    }
     deck.numberOfLoopsPlayed += 1;
 
     if (
