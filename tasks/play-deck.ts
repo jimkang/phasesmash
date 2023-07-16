@@ -23,7 +23,7 @@ export function playDeck({
   var sampler = new Sampler(outNode?.ctx, {
     sampleBuffer: deck.sampleBuffer,
   });
-  var amp = new Gain(outNode?.ctx, { gain: deck.amp });
+  var amp = new Gain(outNode?.ctx, { gain: deck.amp / deckCount });
   var panner = new Panner(outNode?.ctx, { pan: deck.pan });
   var envelope = new Envelope(outNode?.ctx, {
     envelopeLength: duration * 0.99,

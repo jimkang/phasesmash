@@ -4,9 +4,9 @@ export function MainOut({ ctx }) {
   var mainOutNode = new Gain(ctx, { gain: 1.0 });
   mainOutNode.connect({ synthNode: null, audioNode: ctx.destination });
   var compressor = new DynamicsCompressorNode(ctx, {
-    threshold: -6,
-    ratio: 2,
-    attack: 0.001,
+    threshold: -14,
+    ratio: 8,
+    attack: 0.1,
   });
   mainOutNode.connect({ synthNode: null, audioNode: compressor });
   compressor.connect(ctx.destination);
